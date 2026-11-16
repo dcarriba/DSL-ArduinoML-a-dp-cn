@@ -1,3 +1,10 @@
 **/*.java
 **/*.class
 
+# MPS generated / caches
+classes_gen/
+source_gen/
+source_gen.caches/
+
+# User-specific workspace state
+.mps/workspace.xml

@@ -1,0 +1,14 @@
+# Gradle (wrapper jar in gradle/wrapper/ must stay tracked)
+.gradle/
+/build/
+*/build/
+
+# npm (no package.json lives here: stray install)
+/node_modules/
+/package-lock.json
+
+# Maven / Tycho
+target/
+
+# Editor swap files
+*.kate-swp

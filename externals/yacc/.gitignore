@@ -1,0 +1,6 @@
+# Build products of the Makefile (bison/flex/gcc)
+/arduinoml
+*.o
+/arduino_syntax.c
+/arduino_syntax.h
+/arduino_lex.c
