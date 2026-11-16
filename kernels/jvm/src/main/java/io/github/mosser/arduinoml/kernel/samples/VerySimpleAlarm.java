@@ -27,7 +27,7 @@ public class VerySimpleAlarm {
 
         Actuator buzzer = new Actuator();
         buzzer.setName("buzzer");
-        buzzer.setPin(13);
+        buzzer.setPin(10);
 
         // Declaring states
         State on = new State();

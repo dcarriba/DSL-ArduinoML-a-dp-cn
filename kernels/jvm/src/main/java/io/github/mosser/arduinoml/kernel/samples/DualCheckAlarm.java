@@ -16,9 +16,13 @@ public class DualCheckAlarm {
     public static void main(String[] args) {
 
         // Declaring elementary bricks
-        Sensor button = new Sensor();
-        button.setName("button");
-        button.setPin(9);
+        Sensor button1 = new Sensor();
+        button1.setName("button1");
+        button1.setPin(9);
+
+        Sensor button2 = new Sensor();
+        button1.setName("button2");
+        button1.setPin(10);
 
         Actuator led = new Actuator();
         led.setName("LED");
@@ -26,7 +30,7 @@ public class DualCheckAlarm {
 
         Actuator buzzer = new Actuator();
         buzzer.setName("buzzer");
-        buzzer.setPin(13);
+        buzzer.setPin(10);
 
         // Declaring states
         State on = new State();
@@ -60,12 +64,12 @@ public class DualCheckAlarm {
         // Creating transitions
         SignalTransition on2off = new SignalTransition();
         on2off.setNext(off);
-        on2off.setSensor(button);
+        on2off.setSensor(button1);
         on2off.setValue(SIGNAL.HIGH);
 
         SignalTransition off2on = new SignalTransition();
         off2on.setNext(on);
-        off2on.setSensor(button);
+        off2on.setSensor(button1);
         off2on.setValue(SIGNAL.HIGH);
 
         // Binding transitions to states
@@ -75,7 +79,7 @@ public class DualCheckAlarm {
         // Building the App
         App theSwitch = new App();
         theSwitch.setName("Switch!");
-        theSwitch.setBricks(Arrays.asList(button, led, buzzer));
+        theSwitch.setBricks(Arrays.asList(button1, led, buzzer));
         theSwitch.setStates(Arrays.asList(on, off));
         theSwitch.setInitial(off);
 
