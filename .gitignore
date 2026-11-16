@@ -1,7 +1,32 @@
-embeddeds/haskell/dist
+# ---- OS / editor junk ----
+.DS_Store
+Thumbs.db
+*~
+*.swp
+*.swo
+*.kate-swp
+.*.kate-swp
 
-# Python
+# ---- IDEs ----
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# ---- Dependencies & build outputs (all sub-projects) ----
+node_modules/
+.gradle/
+target/
+*.class
+# Pharo (Tonel/FileTree) stores source in Foo.class/ folders: keep them
+!*.class/
+*.log
+
+# ---- Python ----
+__pycache__/
 *.py[cod]
+*.egg-info/
+.venv/
 
-
-
+# ---- Haskell ----
+embeddeds/haskell/dist
