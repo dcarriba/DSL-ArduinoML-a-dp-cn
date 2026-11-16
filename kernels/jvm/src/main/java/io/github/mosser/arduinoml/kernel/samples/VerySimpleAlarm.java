@@ -1,9 +1,7 @@
 package io.github.mosser.arduinoml.kernel.samples;
 
 import io.github.mosser.arduinoml.kernel.App;
-import io.github.mosser.arduinoml.kernel.behavioral.Action;
-import io.github.mosser.arduinoml.kernel.behavioral.SignalTransition;
-import io.github.mosser.arduinoml.kernel.behavioral.State;
+import io.github.mosser.arduinoml.kernel.behavioral.*;
 import io.github.mosser.arduinoml.kernel.generator.ToWiring;
 import io.github.mosser.arduinoml.kernel.generator.Visitor;
 import io.github.mosser.arduinoml.kernel.structural.Actuator;
@@ -27,7 +25,7 @@ public class VerySimpleAlarm {
 
         Actuator buzzer = new Actuator();
         buzzer.setName("BUZZER");
-        buzzer.setPin(13);
+        buzzer.setPin(10);
 
         // Declaring states
         State on = new State();
@@ -58,15 +56,13 @@ public class VerySimpleAlarm {
         off.setActions(Arrays.asList(switchTheLightOff, switchTheBuzzerOff));
 
         // Creating transitions
-        SignalTransition on2off = new SignalTransition();
+        TimeTransition on2off = new TimeTransition();
         on2off.setNext(off);
-        on2off.setSensor(button);
-        on2off.setValue(SIGNAL.HIGH);
+        on2off.setDelay(TimeUnit.s.inMillis);
 
-        SignalTransition off2on = new SignalTransition();
+        TimeTransition off2on = new TimeTransition();
         off2on.setNext(on);
-        off2on.setSensor(button);
-        off2on.setValue(SIGNAL.HIGH);
+        off2on.setDelay(TimeUnit.s.inMillis);
 
         // Binding transitions to states
         on.setTransition(on2off);
@@ -74,7 +70,7 @@ public class VerySimpleAlarm {
 
         // Building the App
         App theSwitch = new App();
-        theSwitch.setName("Switch!");
+        theSwitch.setName("VerySimpleAlarm");
         theSwitch.setBricks(Arrays.asList(button, led, buzzer));
         theSwitch.setStates(Arrays.asList(on, off));
         theSwitch.setInitial(off);
