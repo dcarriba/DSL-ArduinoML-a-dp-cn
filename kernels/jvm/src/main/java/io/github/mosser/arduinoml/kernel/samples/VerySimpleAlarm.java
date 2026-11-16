@@ -41,17 +41,17 @@ public class VerySimpleAlarm {
         switchTheLightOn.setActuator(led);
         switchTheLightOn.setValue(SIGNAL.HIGH);
 
-        Action switchTheBuzzerOn = new Action();
-        switchTheLightOn.setActuator(buzzer);
-        switchTheLightOn.setValue(SIGNAL.HIGH);
-
         Action switchTheLightOff = new Action();
         switchTheLightOff.setActuator(led);
         switchTheLightOff.setValue(SIGNAL.LOW);
 
+        Action switchTheBuzzerOn = new Action();
+        switchTheBuzzerOn.setActuator(buzzer);
+        switchTheBuzzerOn.setValue(SIGNAL.HIGH);
+
         Action switchTheBuzzerOff = new Action();
-        switchTheLightOn.setActuator(buzzer);
-        switchTheLightOn.setValue(SIGNAL.LOW);
+        switchTheBuzzerOff.setActuator(buzzer);
+        switchTheBuzzerOff.setValue(SIGNAL.LOW);
 
         // Binding actions to states
         on.setActions(Arrays.asList(switchTheLightOn, switchTheBuzzerOn));
