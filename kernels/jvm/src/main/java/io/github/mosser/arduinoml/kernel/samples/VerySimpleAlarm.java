@@ -1,9 +1,7 @@
 package io.github.mosser.arduinoml.kernel.samples;
 
 import io.github.mosser.arduinoml.kernel.App;
-import io.github.mosser.arduinoml.kernel.behavioral.Action;
-import io.github.mosser.arduinoml.kernel.behavioral.SignalTransition;
-import io.github.mosser.arduinoml.kernel.behavioral.State;
+import io.github.mosser.arduinoml.kernel.behavioral.*;
 import io.github.mosser.arduinoml.kernel.generator.ToWiring;
 import io.github.mosser.arduinoml.kernel.generator.Visitor;
 import io.github.mosser.arduinoml.kernel.structural.Actuator;
@@ -26,7 +24,7 @@ public class VerySimpleAlarm {
         led.setPin(12);
 
         Actuator buzzer = new Actuator();
-        buzzer.setName("buzzer");
+        buzzer.setName("BUZZER");
         buzzer.setPin(10);
 
         // Declaring states
@@ -35,15 +33,6 @@ public class VerySimpleAlarm {
 
         State off = new State();
         off.setName("off");
-
-
-        Action switchTheBuzzerOn = new Action();
-        switchTheBuzzerOn.setActuator(buzzer);
-        switchTheBuzzerOn.setValue(SIGNAL.HIGH);
-
-        Action switchTheBuzzerOff = new Action();
-        switchTheBuzzerOff.setActuator(buzzer);
-        switchTheBuzzerOff.setValue(SIGNAL.LOW);
 
         // Creating actions
         Action switchTheLightOn = new Action();
@@ -54,20 +43,26 @@ public class VerySimpleAlarm {
         switchTheLightOff.setActuator(led);
         switchTheLightOff.setValue(SIGNAL.LOW);
 
+        Action switchTheBuzzerOn = new Action();
+        switchTheBuzzerOn.setActuator(buzzer);
+        switchTheBuzzerOn.setValue(SIGNAL.HIGH);
+
+        Action switchTheBuzzerOff = new Action();
+        switchTheBuzzerOff.setActuator(buzzer);
+        switchTheBuzzerOff.setValue(SIGNAL.LOW);
+
         // Binding actions to states
-        on.setActions(Arrays.asList(switchTheLightOn,switchTheBuzzerOn));
-        off.setActions(Arrays.asList(switchTheLightOff,switchTheBuzzerOff));
+        on.setActions(Arrays.asList(switchTheLightOn, switchTheBuzzerOn));
+        off.setActions(Arrays.asList(switchTheLightOff, switchTheBuzzerOff));
 
         // Creating transitions
-        SignalTransition on2off = new SignalTransition();
+        TimeTransition on2off = new TimeTransition();
         on2off.setNext(off);
-        on2off.setSensor(button);
-        on2off.setValue(SIGNAL.HIGH);
+        on2off.setDelay(TimeUnit.s.inMillis);
 
-        SignalTransition off2on = new SignalTransition();
+        TimeTransition off2on = new TimeTransition();
         off2on.setNext(on);
-        off2on.setSensor(button);
-        off2on.setValue(SIGNAL.HIGH);
+        off2on.setDelay(TimeUnit.s.inMillis);
 
         // Binding transitions to states
         on.setTransition(on2off);
@@ -75,7 +70,7 @@ public class VerySimpleAlarm {
 
         // Building the App
         App theSwitch = new App();
-        theSwitch.setName("Switch!");
+        theSwitch.setName("VerySimpleAlarm");
         theSwitch.setBricks(Arrays.asList(button, led, buzzer));
         theSwitch.setStates(Arrays.asList(on, off));
         theSwitch.setInitial(off);
@@ -86,6 +81,7 @@ public class VerySimpleAlarm {
 
         // Printing the generated code on the console
         System.out.println(codeGenerator.getResult());
+
     }
 
 }
