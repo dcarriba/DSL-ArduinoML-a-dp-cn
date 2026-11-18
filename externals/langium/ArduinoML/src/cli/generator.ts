@@ -99,10 +99,24 @@ long `+brick.name+`LastDebounceTime = 0;
 	}
 
 	function compileTransition(transition: Transition, fileNode:CompositeGeneratorNode) {
+		let condition = '';
+		let guard = '';
+		transition.conditions.forEach((c, i) => {
+			if (i > 0) condition += transition.operators[i-1] === 'and' ? ' && ' : ' || ';
+			condition += 'digitalRead(' + c.sensor.ref?.inputPin + ') == ' + c.value.value;
+			guard += ' && ' + c.sensor.ref?.name + 'BounceGuard';
+		});
+		for (const c of transition.conditions) {
+			fileNode.append(`
+					`+c.sensor.ref?.name+`BounceGuard = millis() - `+c.sensor.ref?.name+`LastDebounceTime > debounce;`)
+		}
 		fileNode.append(`
-		 			`+transition.sensor.ref?.name+`BounceGuard = millis() - `+transition.sensor.ref?.name+`LastDebounceTime > debounce;
-					if( digitalRead(`+transition.sensor.ref?.inputPin+`) == `+transition.value.value+` && `+transition.sensor.ref?.name+`BounceGuard) {
-						`+transition.sensor.ref?.name+`LastDebounceTime = millis();
+					if( (`+condition+`)`+guard+`) {`)
+		for (const c of transition.conditions) {
+			fileNode.append(`
+						`+c.sensor.ref?.name+`LastDebounceTime = millis();`)
+		}
+		fileNode.append(`
 						currentState = `+transition.next.ref?.name+`;
 					}
 		`)
