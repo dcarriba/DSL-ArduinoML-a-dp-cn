@@ -6,25 +6,37 @@ import io.github.mosser.arduinoml.kernel.structural.Sensor;
 
 public class SignalTransition extends Transition {
 
-    private Sensor sensor;
-    private SIGNAL value;
+    private Condition condition;
 
-
-    public Sensor getSensor() {
-        return sensor;
+    public Condition getCondition() {
+        return condition;
     }
 
+    public void setCondition(Condition condition) {
+        this.condition = condition;
+    }
+
+    /*
+     * Shortcuts so the existing front ends (ANTLR, Groovy, Java, Scala), keep compiling.
+     */
+    // ------------------------------------------------
+    @Deprecated
     public void setSensor(Sensor sensor) {
-        this.sensor = sensor;
+        leafCondition().setSensor(sensor);
     }
 
-    public SIGNAL getValue() {
-        return value;
-    }
-
+    @Deprecated
     public void setValue(SIGNAL value) {
-        this.value = value;
+        leafCondition().setValue(value);
     }
+
+    private SensorCondition leafCondition() {
+        if (!(condition instanceof SensorCondition)) {
+            condition = new SensorCondition();
+        }
+        return (SensorCondition) condition;
+    }
+    // ------------------------------------------------
 
     @Override
     public void accept(Visitor visitor) {

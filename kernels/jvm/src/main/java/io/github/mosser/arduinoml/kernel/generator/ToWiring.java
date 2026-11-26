@@ -4,6 +4,9 @@ import io.github.mosser.arduinoml.kernel.App;
 import io.github.mosser.arduinoml.kernel.behavioral.*;
 import io.github.mosser.arduinoml.kernel.structural.*;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 /**
  * Quick and dirty visitor to support the generation of Wiring code
  */
@@ -112,16 +115,59 @@ public class ToWiring extends Visitor<StringBuffer> {
 			return;
 		}
 		if(context.get("pass") == PASS.TWO) {
-			String sensorName = transition.getSensor().getName();
-			w(String.format("\t\t\t%sBounceGuard = millis() - %sLastDebounceTime > debounce;\n",
-					sensorName, sensorName));
-			w(String.format("\t\t\tif( digitalRead(%d) == %s && %sBounceGuard) {\n",
-					transition.getSensor().getPin(), transition.getValue(), sensorName));
-			w(String.format("\t\t\t\t%sLastDebounceTime = millis();\n", sensorName));
+			// every sensor read by the condition tree is debounced
+			Set<Sensor> sensors = new LinkedHashSet<>();
+			collectSensors(transition.getCondition(), sensors);
+
+			for (Sensor sensor : sensors) {
+				w(String.format("\t\t\t%sBounceGuard = millis() - %sLastDebounceTime > debounce;\n",
+						sensor.getName(), sensor.getName()));
+			}
+			w("\t\t\tif( ");
+			transition.getCondition().accept(this);
+			for (Sensor sensor : sensors) {
+				w(String.format(" && %sBounceGuard", sensor.getName()));
+			}
+			w(") {\n");
+			for (Sensor sensor : sensors) {
+				w(String.format("\t\t\t\t%sLastDebounceTime = millis();\n", sensor.getName()));
+			}
 			w("\t\t\t\tcurrentState = " + transition.getNext().getName() + ";\n");
 			w("\t\t\t}\n");
 			return;
 		}
+	}
+
+	private static void collectSensors(Condition condition, Set<Sensor> sensors) {
+		if (condition instanceof SensorCondition) {
+			sensors.add(((SensorCondition) condition).getSensor());
+		} else if (condition instanceof BinaryCondition) {
+			collectSensors(((BinaryCondition) condition).getLeft(), sensors);
+			collectSensors(((BinaryCondition) condition).getRight(), sensors);
+		} else if (condition instanceof NotCondition) {
+			collectSensors(((NotCondition) condition).getCondition(), sensors);
+		}
+	}
+
+	@Override
+	public void visit(SensorCondition condition) {
+		w(String.format("(digitalRead(%d) == %s)",
+				condition.getSensor().getPin(), condition.getValue()));
+	}
+
+	@Override
+	public void visit(BinaryCondition condition) {
+		w("(");
+		condition.getLeft().accept(this);
+		w(" " + condition.getOperator().symbol + " ");
+		condition.getRight().accept(this);
+		w(")");
+	}
+
+	@Override
+	public void visit(NotCondition condition) {
+		w("!");
+		condition.getCondition().accept(this);
 	}
 
 	@Override
